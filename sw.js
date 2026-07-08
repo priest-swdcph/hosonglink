@@ -1,8 +1,9 @@
-const CACHE_NAME = 'app-hosong-v1';
+const CACHE_NAME = 'app-hosong-v2'; // อัปเดตเวอร์ชัน Cache
 const urlsToCache = [
   './index.html',
   './script.js',
-  './manifest.json'
+  './manifest.json',
+  './icon.png'
 ];
 
 self.addEventListener('install', event => {
@@ -14,6 +15,17 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
   event.waitUntil(clients.claim());
 });
 
