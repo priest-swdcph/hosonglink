@@ -1,5 +1,5 @@
 // 🚨 นำ URL ที่ได้จากการ Deploy Web App ใน GAS มาวางที่นี่
-const GAS_API_URL = "YOUR_WEB_APP_URL_HERE";
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz2tchscNXI4YI4KKOH71U9nbmf_GLtonxg7Abk9Z-loxqrmnGKab_SFtFPU-caA3e8/exec";
 
 let allAppsData = [];
 let isAdmin = false;
