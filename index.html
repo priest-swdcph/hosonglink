@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รวม APP หอสงฆ์</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d9488">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2965/2965306.png">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Prompt', sans-serif; }
+    .app-card { transition: all 0.2s ease-in-out; }
+    .app-card:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .truncate-2-lines { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen pb-10">
+
+  <header class="bg-teal-600 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+        <h1 class="text-xl font-semibold">รวม APP หอสงฆ์</h1>
+      </div>
+      <button id="adminToggleBtn" class="text-teal-100 hover:text-white transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="max-w-5xl mx-auto px-4 mt-6">
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <input type="text" id="searchInput" placeholder="ค้นหาชื่อแอป..." class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm shadow-sm transition">
+    </div>
+  </div>
+
+  <div id="adminPanel" class="max-w-5xl mx-auto px-4 mt-6 hidden">
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-teal-100">
+      <h2 class="text-lg font-semibold text-teal-700 mb-4">✨ เพิ่มแอปใหม่ (Admin Mode)</h2>
+      <form id="addAppForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700">ชื่อแอป</label>
+          <input type="text" id="appName" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">หมวดหมู่</label>
+          <select id="appCategory" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+            <option value="ตรวจสอบความพร้อมใช้">ตรวจสอบความพร้อมใช้</option>
+            <option value="งานพยาบาล">งานพยาบาล</option>
+            <option value="ผู้ช่วยเหลือคนไข้">ผู้ช่วยเหลือคนไข้</option>
+            <option value="อื่นๆ ทั่วไป">อื่นๆ ทั่วไป</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Link ไอคอน (URL รูปภาพ)</label>
+          <input type="url" id="appIcon" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Link App (URL ปลายทาง)</label>
+          <input type="url" id="appLink" required class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+        </div>
+        <div class="md:col-span-2 flex justify-end">
+          <button type="submit" id="submitBtn" class="bg-teal-600 border border-transparent rounded-lg shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition">
+            บันทึกข้อมูล
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="loadingIndicator" class="flex justify-center items-center mt-12">
+    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600"></div>
+  </div>
+
+  <div id="appContainer" class="max-w-5xl mx-auto px-4 mt-8 hidden">
+    <div class="mb-8 category-section" data-cat="ตรวจสอบความพร้อมใช้">
+      <h3 class="text-lg font-medium text-gray-800 mb-4 border-l-4 border-blue-500 pl-2">ตรวจสอบความพร้อมใช้</h3>
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 app-grid" id="grid-cat-1"></div>
+    </div>
+    
+    <div class="mb-8 category-section" data-cat="งานพยาบาล">
+      <h3 class="text-lg font-medium text-gray-800 mb-4 border-l-4 border-green-500 pl-2">งานพยาบาล</h3>
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 app-grid" id="grid-cat-2"></div>
+    </div>
+
+    <div class="mb-8 category-section" data-cat="ผู้ช่วยเหลือคนไข้">
+      <h3 class="text-lg font-medium text-gray-800 mb-4 border-l-4 border-purple-500 pl-2">ผู้ช่วยเหลือคนไข้</h3>
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 app-grid" id="grid-cat-3"></div>
+    </div>
+
+    <div class="mb-8 category-section" data-cat="อื่นๆ ทั่วไป">
+      <h3 class="text-lg font-medium text-gray-800 mb-4 border-l-4 border-orange-500 pl-2">อื่นๆ ทั่วไป</h3>
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 app-grid" id="grid-cat-4"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
