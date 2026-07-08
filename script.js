@@ -4,6 +4,10 @@ const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz2tchscNXI4YI4KKOH
 let allAppsData = [];
 let isAdmin = false;
 
+// ตัวแปรเก็บสถานะการค้นหาและหมวดหมู่
+let currentSearchQuery = "";
+let currentCategory = "ทั้งหมด";
+
 document.addEventListener("DOMContentLoaded", () => {
   registerServiceWorker();
   fetchApps();
@@ -24,19 +28,63 @@ async function fetchApps() {
       allAppsData = result.data;
       document.getElementById('loadingIndicator').style.display = 'none';
       document.getElementById('appContainer').style.display = 'block';
-      renderApps(allAppsData);
+      renderFilteredApps(); // เรียกใช้งานฟังก์ชันที่ประมวลผลทั้ง Search และ Filter
     }
   } catch (error) {
-    Swal.fire({
-      title: 'ข้อผิดพลาด!',
-      text: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้',
-      icon: 'error',
-      confirmButtonColor: '#d97706'
-    });
+    Swal.fire({ title: 'ข้อผิดพลาด!', text: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', icon: 'error', confirmButtonColor: '#d97706' });
   }
 }
 
-// ฟังก์ชันวาด UI (ออกแบบ Card ให้ใหญ่ขึ้นและเด่นขึ้นบน PC)
+// ----------------------------------------------------
+// ระบบ Filter & Search
+// ----------------------------------------------------
+
+// ประมวลผลก่อนแสดงผล (กรองข้อมูลจากช่องค้นหา + ปุ่มหมวดหมู่)
+function renderFilteredApps() {
+  let filtered = allAppsData;
+
+  // 1. กรองตามปุ่มหมวดหมู่
+  if (currentCategory !== "ทั้งหมด") {
+    filtered = filtered.filter(app => app.category === currentCategory);
+  }
+
+  // 2. กรองตามข้อความที่พิมพ์ค้นหา
+  if (currentSearchQuery !== "") {
+    filtered = filtered.filter(app => app.name.toLowerCase().includes(currentSearchQuery));
+  }
+
+  // นำข้อมูลที่ผ่านการกรองแล้วไปสร้าง UI
+  renderApps(filtered);
+}
+
+// เมื่อพิมพ์ในช่องค้นหา
+function handleSearch(e) {
+  currentSearchQuery = e.target.value.toLowerCase();
+  renderFilteredApps();
+}
+
+// เมื่อคลิกปุ่มหมวดหมู่ด้านบน
+function filterCategory(categoryName) {
+  currentCategory = categoryName;
+
+  // เปลี่ยนสีปุ่มที่ถูกเลือก (Active State)
+  const buttons = document.querySelectorAll('.cat-btn');
+  buttons.forEach(btn => {
+    if (btn.innerText.trim() === categoryName) {
+      // ปุ่มที่ถูกเลือก: สีพื้นหลังเข้ม ตัวอักษรสีขาว
+      btn.className = "cat-btn bg-amber-600 text-white px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap shadow-sm transition";
+    } else {
+      // ปุ่มปกติ: พื้นหลังขาว ขอบสีส้ม
+      btn.className = "cat-btn bg-white text-amber-700 border border-amber-200 px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap hover:bg-amber-50 transition";
+    }
+  });
+
+  renderFilteredApps();
+}
+
+// ----------------------------------------------------
+// ระบบแสดงผล UI
+// ----------------------------------------------------
 function renderApps(apps) {
   document.getElementById('grid-cat-1').innerHTML = '';
   document.getElementById('grid-cat-2').innerHTML = '';
@@ -51,15 +99,12 @@ function renderApps(apps) {
                   </button>`;
     }
 
-    // ปรับโครงสร้าง Card ให้ padding เยอะขึ้น รูปใหญ่ขึ้น ฟอนต์ใหญ่ขึ้น
     const cardHTML = `
       <div class="relative app-card bg-white rounded-[1.5rem] p-5 md:p-6 shadow-sm flex flex-col items-center text-center border-2 border-amber-100/50 cursor-pointer" onclick="window.open('${app.link}', '_blank')">
         ${adminBtn}
-        
         <div class="w-20 h-20 md:w-28 md:h-28 mb-4 flex items-center justify-center overflow-hidden rounded-[1.2rem] bg-gray-50 drop-shadow-sm border border-gray-100">
           <img src="${app.icon}" alt="${app.name}" class="w-full h-full object-cover" onerror="this.src='./icon.png'">
         </div>
-        
         <span class="text-sm md:text-lg font-medium text-gray-800 truncate-2-lines w-full">${app.name}</span>
       </div>
     `;
@@ -70,26 +115,22 @@ function renderApps(apps) {
     else document.getElementById('grid-cat-4').insertAdjacentHTML('beforeend', cardHTML);
   });
 
-  // ซ่อนหมวดหมู่ที่ว่างเปล่า
+  // ซ่อน Header ของหมวดหมู่ที่ว่างเปล่า 
+  // (ฟังก์ชันนี้จะช่วยซ่อนหัวข้อหมวดหมู่อื่นๆ อัตโนมัติเวลาเรากดปุ่มกรอง)
   document.querySelectorAll('.category-section').forEach(section => {
     const grid = section.querySelector('.app-grid');
     section.style.display = grid.children.length === 0 ? 'none' : 'block';
   });
 }
 
-// ระบบค้นหา
-function handleSearch(e) {
-  const keyword = e.target.value.toLowerCase();
-  const filteredApps = allAppsData.filter(app => app.name.toLowerCase().includes(keyword));
-  renderApps(filteredApps);
-}
-
-// ระบบ Admin (4029)
+// ----------------------------------------------------
+// ระบบ Admin (4029) & CRUD 
+// ----------------------------------------------------
 function toggleAdminLogin() {
   if (isAdmin) {
     isAdmin = false;
     document.getElementById('adminPanel').classList.add('hidden');
-    renderApps(allAppsData);
+    renderFilteredApps(); 
     Swal.fire({ title: 'ออกจากระบบสำเร็จ', icon: 'success', timer: 1000, showConfirmButton: false });
   } else {
     Swal.fire({
@@ -99,13 +140,13 @@ function toggleAdminLogin() {
       showCancelButton: true,
       confirmButtonText: 'เข้าสู่ระบบ',
       cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#d97706' // โทนสี Amber
+      confirmButtonColor: '#d97706'
     }).then((result) => {
       if (result.isConfirmed) {
         if (result.value === "4029") {
           isAdmin = true;
           document.getElementById('adminPanel').classList.remove('hidden');
-          renderApps(allAppsData);
+          renderFilteredApps();
           Swal.fire({ title: 'เข้าสู่ระบบสำเร็จ', icon: 'success', timer: 1000, showConfirmButton: false });
         } else {
           Swal.fire({title: 'รหัสผ่านไม่ถูกต้อง', icon: 'error', confirmButtonColor: '#d97706'});
@@ -115,7 +156,6 @@ function toggleAdminLogin() {
   }
 }
 
-// ส่งข้อมูลไปบันทึก (POST)
 async function submitApp(event) {
   event.preventDefault();
   const btn = document.getElementById('submitBtn');
@@ -141,7 +181,7 @@ async function submitApp(event) {
     const result = await response.json();
     if (result.status === "success") {
       allAppsData = result.data;
-      renderApps(allAppsData);
+      renderFilteredApps();
       document.getElementById('addAppForm').reset();
       Swal.fire({ title: 'เพิ่มแอปสำเร็จ!', icon: 'success', timer: 1500, showConfirmButton: false });
     }
@@ -153,7 +193,6 @@ async function submitApp(event) {
   }
 }
 
-// ระบบลบแอป (POST)
 function confirmDelete(rowNumber, event) {
   event.stopPropagation();
   Swal.fire({
@@ -161,7 +200,7 @@ function confirmDelete(rowNumber, event) {
     text: "คุณต้องการลบแอปนี้ใช่หรือไม่?",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#ef4444', // สีแดงสำหรับการลบ
+    confirmButtonColor: '#ef4444',
     cancelButtonColor: '#d1d5db',
     confirmButtonText: 'ใช่, ลบเลย!',
     cancelButtonText: 'ยกเลิก'
@@ -181,7 +220,7 @@ function confirmDelete(rowNumber, event) {
         
         if (result.status === "success") {
           allAppsData = result.data;
-          renderApps(allAppsData);
+          renderFilteredApps();
           Swal.fire({ title: 'ลบสำเร็จ!', icon: 'success', timer: 1500, showConfirmButton: false });
         }
       } catch (error) {
@@ -191,7 +230,6 @@ function confirmDelete(rowNumber, event) {
   });
 }
 
-// ลงทะเบียน Service Worker สำหรับ PWA
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
