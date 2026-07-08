@@ -31,6 +31,8 @@
       -webkit-box-orient: vertical; 
       overflow: hidden; 
     }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-amber-50 text-gray-800 min-h-screen pb-10">
@@ -58,6 +60,26 @@
         </svg>
       </div>
       <input type="text" id="searchInput" placeholder="ค้นหาชื่อแอป..." class="block w-full pl-12 pr-4 py-4 border-2 border-amber-200 rounded-2xl text-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-amber-500 shadow-sm transition">
+    </div>
+  </div>
+  <div class="max-w-[95%] 2xl:max-w-screen-2xl mx-auto px-4 mt-8">
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <svg class="h-6 w-6 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <input type="text" id="searchInput" placeholder="ค้นหาชื่อแอป..." class="block w-full pl-12 pr-4 py-4 border-2 border-amber-200 rounded-2xl text-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-amber-500 shadow-sm transition">
+    </div>
+  </div>
+
+  <div class="max-w-[95%] 2xl:max-w-screen-2xl mx-auto px-4 mt-4">
+    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide" id="categoryFilter">
+      <button onclick="filterCategory('ทั้งหมด')" class="cat-btn bg-amber-600 text-white px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap shadow-sm transition">ทั้งหมด</button>
+      <button onclick="filterCategory('ตรวจสอบความพร้อมใช้')" class="cat-btn bg-white text-amber-700 border border-amber-200 px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap hover:bg-amber-50 transition">ตรวจสอบความพร้อมใช้</button>
+      <button onclick="filterCategory('งานพยาบาล')" class="cat-btn bg-white text-amber-700 border border-amber-200 px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap hover:bg-amber-50 transition">งานพยาบาล</button>
+      <button onclick="filterCategory('ผู้ช่วยเหลือคนไข้')" class="cat-btn bg-white text-amber-700 border border-amber-200 px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap hover:bg-amber-50 transition">ผู้ช่วยเหลือคนไข้</button>
+      <button onclick="filterCategory('อื่นๆ ทั่วไป')" class="cat-btn bg-white text-amber-700 border border-amber-200 px-5 py-2 rounded-full text-sm md:text-base font-medium whitespace-nowrap hover:bg-amber-50 transition">อื่นๆ ทั่วไป</button>
     </div>
   </div>
 
