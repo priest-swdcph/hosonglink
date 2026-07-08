@@ -6,7 +6,8 @@
   <title>รวม APP หอสงฆ์</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#d97706"> <link rel="icon" type="image/png" href="./icon.png">
+  <meta name="theme-color" content="#d97706"> 
+  <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,6 +32,8 @@
       -webkit-box-orient: vertical; 
       overflow: hidden; 
     }
+    
+    /* ซ่อน Scrollbar ของแถบเมนูหมวดหมู่ */
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
@@ -43,7 +46,7 @@
         <img src="./icon.png" alt="Logo" class="w-12 h-12 rounded-xl shadow-sm bg-white p-0.5 object-cover">
         <h1 class="text-xl md:text-2xl font-semibold drop-shadow-md">รวม APP หอสงฆ์</h1>
       </div>
-      <button id="adminToggleBtn" class="text-amber-100 hover:text-white transition transform hover:scale-110">
+      <button id="adminToggleBtn" class="text-amber-100 hover:text-white transition transform hover:scale-110" aria-label="Toggle Admin Panel">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -52,16 +55,6 @@
     </div>
   </header>
 
-  <div class="max-w-[95%] 2xl:max-w-screen-2xl mx-auto px-4 mt-8">
-    <div class="relative">
-      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <svg class="h-6 w-6 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-        </svg>
-      </div>
-      <input type="text" id="searchInput" placeholder="ค้นหาชื่อแอป..." class="block w-full pl-12 pr-4 py-4 border-2 border-amber-200 rounded-2xl text-lg leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-amber-500 shadow-sm transition">
-    </div>
-  </div>
   <div class="max-w-[95%] 2xl:max-w-screen-2xl mx-auto px-4 mt-8">
     <div class="relative">
       <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
