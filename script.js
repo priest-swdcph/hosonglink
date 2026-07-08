@@ -1,5 +1,5 @@
-// นำ URL ที่ได้จากการ Deploy Web App ใน GAS มาวางที่นี่
-const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz2tchscNXI4YI4KKOH71U9nbmf_GLtonxg7Abk9Z-loxqrmnGKab_SFtFPU-caA3e8/exec";
+// 🚨 นำ URL ที่ได้จากการ Deploy Web App ใน GAS มาวางที่นี่
+const GAS_API_URL = "YOUR_WEB_APP_URL_HERE";
 
 let allAppsData = [];
 let isAdmin = false;
@@ -27,11 +27,16 @@ async function fetchApps() {
       renderApps(allAppsData);
     }
   } catch (error) {
-    Swal.fire('ข้อผิดพลาด!', 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้', 'error');
+    Swal.fire({
+      title: 'ข้อผิดพลาด!',
+      text: 'ไม่สามารถเชื่อมต่อฐานข้อมูลได้',
+      icon: 'error',
+      confirmButtonColor: '#d97706'
+    });
   }
 }
 
-// ฟังก์ชันวาด UI
+// ฟังก์ชันวาด UI (ออกแบบ Card ให้ใหญ่ขึ้นและเด่นขึ้นบน PC)
 function renderApps(apps) {
   document.getElementById('grid-cat-1').innerHTML = '';
   document.getElementById('grid-cat-2').innerHTML = '';
@@ -41,18 +46,21 @@ function renderApps(apps) {
   apps.forEach(app => {
     let adminBtn = '';
     if (isAdmin) {
-      adminBtn = `<button onclick="confirmDelete(${app.row}, event)" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 z-10" title="ลบแอป">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      adminBtn = `<button onclick="confirmDelete(${app.row}, event)" class="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 shadow-md hover:bg-red-600 hover:scale-110 transition z-10" title="ลบแอป">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                   </button>`;
     }
 
+    // ปรับโครงสร้าง Card ให้ padding เยอะขึ้น รูปใหญ่ขึ้น ฟอนต์ใหญ่ขึ้น
     const cardHTML = `
-      <div class="relative app-card bg-white rounded-xl p-3 shadow-sm flex flex-col items-center text-center border border-gray-100 cursor-pointer" onclick="window.open('${app.link}', '_blank')">
+      <div class="relative app-card bg-white rounded-[1.5rem] p-5 md:p-6 shadow-sm flex flex-col items-center text-center border-2 border-amber-100/50 cursor-pointer" onclick="window.open('${app.link}', '_blank')">
         ${adminBtn}
-        <div class="w-14 h-14 mb-2 flex items-center justify-center overflow-hidden rounded-2xl bg-gray-50">
-          <img src="${app.icon}" alt="${app.name}" class="w-full h-full object-cover" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2965/2965306.png'">
+        
+        <div class="w-20 h-20 md:w-28 md:h-28 mb-4 flex items-center justify-center overflow-hidden rounded-[1.2rem] bg-gray-50 drop-shadow-sm border border-gray-100">
+          <img src="${app.icon}" alt="${app.name}" class="w-full h-full object-cover" onerror="this.src='./icon.png'">
         </div>
-        <span class="text-xs font-medium text-gray-700 truncate-2-lines w-full">${app.name}</span>
+        
+        <span class="text-sm md:text-lg font-medium text-gray-800 truncate-2-lines w-full">${app.name}</span>
       </div>
     `;
 
@@ -91,7 +99,7 @@ function toggleAdminLogin() {
       showCancelButton: true,
       confirmButtonText: 'เข้าสู่ระบบ',
       cancelButtonText: 'ยกเลิก',
-      confirmButtonColor: '#0d9488'
+      confirmButtonColor: '#d97706' // โทนสี Amber
     }).then((result) => {
       if (result.isConfirmed) {
         if (result.value === "4029") {
@@ -100,7 +108,7 @@ function toggleAdminLogin() {
           renderApps(allAppsData);
           Swal.fire({ title: 'เข้าสู่ระบบสำเร็จ', icon: 'success', timer: 1000, showConfirmButton: false });
         } else {
-          Swal.fire('รหัสผ่านไม่ถูกต้อง', '', 'error');
+          Swal.fire({title: 'รหัสผ่านไม่ถูกต้อง', icon: 'error', confirmButtonColor: '#d97706'});
         }
       }
     });
@@ -127,7 +135,6 @@ async function submitApp(event) {
     const response = await fetch(GAS_API_URL, {
       method: "POST",
       body: JSON.stringify(payload),
-      // ส่งเป็น text/plain เพื่อหลีกเลี่ยง CORS Preflight 
       headers: { "Content-Type": "text/plain;charset=utf-8" }
     });
     
@@ -139,7 +146,7 @@ async function submitApp(event) {
       Swal.fire({ title: 'เพิ่มแอปสำเร็จ!', icon: 'success', timer: 1500, showConfirmButton: false });
     }
   } catch (error) {
-    Swal.fire('ผิดพลาด', 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+    Swal.fire({title:'ผิดพลาด', text:'ไม่สามารถบันทึกข้อมูลได้', icon:'error', confirmButtonColor: '#d97706'});
   } finally {
     btn.disabled = false;
     btn.innerHTML = 'บันทึกข้อมูล';
@@ -154,9 +161,10 @@ function confirmDelete(rowNumber, event) {
     text: "คุณต้องการลบแอปนี้ใช่หรือไม่?",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'ใช่, ลบเลย!'
+    confirmButtonColor: '#ef4444', // สีแดงสำหรับการลบ
+    cancelButtonColor: '#d1d5db',
+    confirmButtonText: 'ใช่, ลบเลย!',
+    cancelButtonText: 'ยกเลิก'
   }).then(async (result) => {
     if (result.isConfirmed) {
       Swal.fire({ title: 'กำลังลบ...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
@@ -177,7 +185,7 @@ function confirmDelete(rowNumber, event) {
           Swal.fire({ title: 'ลบสำเร็จ!', icon: 'success', timer: 1500, showConfirmButton: false });
         }
       } catch (error) {
-        Swal.fire('ผิดพลาด', 'ไม่สามารถลบข้อมูลได้', 'error');
+        Swal.fire({title:'ผิดพลาด', text:'ไม่สามารถลบข้อมูลได้', icon:'error', confirmButtonColor: '#d97706'});
       }
     }
   });
